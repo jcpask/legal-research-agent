@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: legal-research-agent
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python server.py
+    envVars:
+      - key: COURTLISTENER_API_TOKEN
+        sync: false
