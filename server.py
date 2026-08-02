@@ -187,7 +187,7 @@ def get_opinion_text(cluster_id: int) -> str:
     if not results:
         return f"No opinion text found for cluster_id {cluster_id}."
 
-    preferred_types = ["combined-opinion", "lead-opinion", "majority", "unanimous-opinion"]
+    preferred_types = ["020lead", "015unamimous", "010combined"]
     opinion = next(
         (o for t in preferred_types for o in results if o.get("type") == t),
         results[0],
@@ -211,25 +211,6 @@ def get_opinion_text(cluster_id: int) -> str:
     text = text[:max_chars]
     suffix = "\n\n[...truncated; read the full opinion on courtlistener.com...]" if truncated else ""
     return f"{text}{suffix}"
-
-
-@mcp.tool()
-def _debug_opinion_structure(cluster_id: int) -> str:
-    """TEMP DIAGNOSTIC - not for classroom use. Dumps opinion field structure for a cluster."""
-    op_resp = httpx.get(
-        f"{COURTLISTENER_API}/opinions/",
-        params={"cluster": cluster_id},
-        headers=_courtlistener_headers(),
-        timeout=20,
-    )
-    op_resp.raise_for_status()
-    results = op_resp.json().get("results", [])
-    fields = ["html_with_citations", "plain_text", "html", "html_lawbox", "html_columbia", "xml_harvard", "html_anon_2020"]
-    lines = [f"total results: {len(results)}"]
-    for o in results:
-        field_info = {f: len(o.get(f) or "") for f in fields}
-        lines.append(f"id={o.get('id')} type={o.get('type')!r} ordering_key={o.get('ordering_key')} fields={field_info}")
-    return "\n".join(lines)
 
 
 @mcp.tool()
