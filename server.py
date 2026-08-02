@@ -187,7 +187,11 @@ def get_opinion_text(cluster_id: int) -> str:
     if not results:
         return f"No opinion text found for cluster_id {cluster_id}."
 
-    opinion = results[0]
+    preferred_types = ["combined-opinion", "lead-opinion", "majority", "unanimous-opinion"]
+    opinion = next(
+        (o for t in preferred_types for o in results if o.get("type") == t),
+        results[0],
+    )
     raw = (
         opinion.get("html_with_citations")
         or opinion.get("plain_text")
