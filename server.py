@@ -188,10 +188,17 @@ def get_opinion_text(cluster_id: int) -> str:
         return f"No opinion text found for cluster_id {cluster_id}."
 
     opinion = results[0]
-    text = opinion.get("plain_text")
-    if not text:
-        html = opinion.get("html") or opinion.get("html_lawbox") or opinion.get("html_columbia") or ""
-        text = BeautifulSoup(html, "html.parser").get_text("\n", strip=True)
+    raw = (
+        opinion.get("html_with_citations")
+        or opinion.get("plain_text")
+        or opinion.get("html")
+        or opinion.get("html_lawbox")
+        or opinion.get("html_columbia")
+        or opinion.get("xml_harvard")
+        or opinion.get("html_anon_2020")
+        or ""
+    )
+    text = BeautifulSoup(raw, "html.parser").get_text("\n", strip=True) if raw else ""
     if not text:
         return f"Opinion text not available in a readable format for cluster_id {cluster_id}."
 
